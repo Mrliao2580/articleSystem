@@ -1,105 +1,153 @@
+// 导入model,相当于模型执行sql语句，
 const model = require('../model/model.js');
-const {delsucc,delfail,exception,argsfail,addsucc,addfail,getsucc,getfail,updsucc,updfail} = require('../util/ErrorHint.js');
+// 导入返回结果的信息
+const {
+    delsucc,
+    delfail,
+    exception,
+    argsfail,
+    addsucc,
+    addfail,
+    getsucc,
+    getfail,
+    updsucc,
+    updfail
+} = require('../util/responseMessage.js');
 
+// 分类控制器
 let CateController = {
-    catindex:(req,res)=>{
+    // 渲染后台分类列表页面
+    catindex: (req, res) => {
         res.render('category-index.html')
     },
-    getCate:async (req,res)=>{
+
+    //  获取分类数据的接口
+    getCate: async (req, res) => {
         // 1.查询数据库
         let sql = "select * from category order by sort desc"
         let data = await model(sql)
         // 2.返回数据
         res.json(data)
     },
-    getOneCate:async (req,res)=>{
+
+    // 获取单条分类数据
+    getOneCate: async (req, res) => {
         // 1.接收参数
-       let {cat_id} = req.query;
-       if(!cat_id){
-           res.json(argsfail)
-       }else{
-           // 2.查询数据库
-           let sql = `select * from category where cat_id = ${cat_id}`;
-           
-           let data = await model(sql);
-           // 3.返回数据
-           if(data.length){
+        let {
+            cat_id
+        } = req.query;
+        if (!cat_id) {
+            res.json(argsfail)
+        } else {
+            // 2.查询数据库
+            let sql = `select * from category where cat_id = ${cat_id}`;
+
+            let data = await model(sql);
+            // 3.返回数据
+            if (data.length) {
                 data[0].errcode = 0;
                 res.json(data[0])
-           }else{
-               res.json(getfail)
-           }
-       }
+            } else {
+                res.json(getfail)
+            }
+        }
+
+
     },
-    updCate : async (req,res)=>{
+
+
+    // 实现分类的编辑入库
+    updCate: async (req, res) => {
         //1.接收参数
-        let {cat_id,name,sort,add_date} = req.body
-        if(!cat_id){
+        let {
+            cat_id,
+            name,
+            sort,
+            add_date
+        } = req.body
+        if (!cat_id) {
             res.json(argsfail);
             return;
         }
         //2.编写sql
         let sql = `update category set name='${name}',sort=${sort},add_date='${add_date}' 
-                    where cat_id = ${cat_id}
-                `;
+                where cat_id = ${cat_id}
+            `;
         let result = await model(sql)
         //3.返回结果
-        if(result.affectedRows){
+        if (result.affectedRows) {
             res.json(updsucc)
-        }else{
+        } else {
             res.json(updfail)
         }
-        
-    },
-    delCat : async (req,res)=>{
-    let {cat_id} = req.body;
 
-    // 判断参数
-    if(!cat_id){
-        res.json(argsfail)
-    }else{
-        cat_id = parseInt(cat_id);
-        let sql = `delete from category where cat_id = ${cat_id}`
-        let result;
-        let response;
-        try{
-            // 成功
-            result = await model(sql)
-            if(result.affectedRows){
-                response =  delsucc;
-            }else{
-                response =  delfail;
+    },
+
+    // 删除分类
+    delCat: async (req, res) => {
+        let {
+            cat_id
+        } = req.body;
+
+        // 判断参数
+        if (!cat_id) {
+            res.json(argsfail)
+        } else {
+            cat_id = parseInt(cat_id);
+            let sql = `delete from category where cat_id = ${cat_id}`
+            let result;
+            let response;
+            try {
+                // 成功
+                result = await model(sql)
+                if (result.affectedRows) {
+                    response = delsucc;
+                } else {
+                    response = delfail;
+                }
+
+            } catch (e) {
+                // 失败
+                response = exception;
             }
 
-        }catch(e){
-            // 失败
-            response =  exception;
+            res.json(response)
         }
-        
-        res.json(response)
-    }
     },
-    catadd : (req,res)=>{
+
+    // 展示添加分类的页面
+    catadd: (req, res) => {
         res.render('category-add.html')
     },
-    catedit : (req,res)=>{
+
+    // 展示编辑分类的页面
+    catedit: (req, res) => {
         res.render('category-edit.html')
     },
-    postCat : async (req,res)=>{
+
+    // 添加分类接口
+    postCat: async (req, res) => {
         //1.接收参数
-        let {name,sort,add_date} = req.body;
+        let {
+            name,
+            sort,
+            add_date
+        } = req.body;
         //2.入库
         let sql = `insert into category(name,sort,add_date) values('${name}',${sort},'${add_date}')`
         console.log(sql);
         //3.响应结果
         let result = await model(sql);
-        if(result.affectedRows){
+        if (result.affectedRows) {
             // 成功
             res.json(addsucc)
-        }else{
+        } else {
             res.json(addfail)
         }
     }
 }
 
+
+
+// 导出模块
 module.exports = CateController;
