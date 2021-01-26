@@ -55,7 +55,6 @@ let CateController = {
 
     },
 
-
     // 实现分类的编辑入库
     updCate: async (req, res) => {
         //1.接收参数
@@ -125,6 +124,7 @@ let CateController = {
         res.render('category-edit.html')
     },
 
+
     // 添加分类接口
     postCat: async (req, res) => {
         //1.接收参数
@@ -146,8 +146,6 @@ let CateController = {
         }
     }
 }
-
-
 
 // 导出模块
 module.exports = CateController;

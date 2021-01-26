@@ -4,8 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>layout 后台大布局 - Layui</title>
-  <link rel="stylesheet" href="/public/layui/css/layui.css">
+  {{ include './common/linkcss.html' }}
 </head>
 
 <body class="layui-layout-body">
@@ -56,11 +55,9 @@
     {{ include './common/footer.html' }}
 
   </div>
-  <!-- 注意引入的依赖顺序 -->
-  <script src="/public/layui/layui.js"></script>
-  <script src="/public/js/jquery.js"></script>
-  <script src="/public/js/moment.js"></script>
-  <script src="/public/js/util.js"></script>
+  {{ include './common/scriptjs.html' }}
+  <!-- 这里可以引入此文件单独所需要的js插件 -->
+  <!-- <script src="/public/js/aaa.js"></script> -->
   <script>
 
      //JavaScript代码区域
@@ -95,7 +92,6 @@
       })
     }
 
-
     function initCatData(){
       $.ajax({
         url: "/getCate",
@@ -105,11 +101,9 @@
         renderTable(res)
       })
     }
-    
     // 发送ajax请求 获取数据
     initCatData()
 
-   
     // ajax删除(需要委托绑定，因为元素是动态新增)
     $("tbody").on('click','.del',function(){
      
@@ -145,7 +139,6 @@
         })
       });
     })
-
     // 跳转到添加分类的页面中
     $("#add").on('click',function(){
        location.href = '/catadd';
