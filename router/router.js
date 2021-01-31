@@ -1,67 +1,74 @@
 let express = require('express');
 
-// 得到一个路由器
 let router = express.Router();
 
-
-// 导入相应的控制器
+const multer = require('multer');
+let upload = multer({
+    dest: 'uploads/'
+})
+const model = require('../model/model.js');
 const CateController = require('../controller/CateController.js');
 const ArtController = require('../controller/ArtController.js');
+const UserController = require('../controller/UserController.js');
+router.get('/cateCount', async (req, res) => {
+    let sql = `select count(*) total ,t2.name,t1.cat_id from article t1 
+                left join category t2 
+                on t1.cat_id = t2.cat_id 
+                group by  t1.cat_id`;
+    let data = await model(sql);
+    res.json(data)
+})
 
-// 匹配 / 或 /admin
-router.get(/^\/$|^\/admin$/,(req,res)=>{
+router.get(/^\/$|^\/admin$/, (req, res) => {
     res.render('index.html')
 })
 
-// 文章列表
-router.get('/artindex',(req,res)=>{
+router.get('/artindex', (req, res) => {
     res.render('article-index.html')
 })
-
-// 渲染后台分类列表页面
-router.get('/catindex',CateController.catindex)
-
-// 渲染出添加分类的页面
-router.get('/catadd',CateController.catadd)
-
-// 渲染出编辑分类的页面
-router.get('/catedit',CateController.catedit)
-
-// 提交分类的数据
-router.post('/postCat',CateController.postCat)
-
-
-router.get('/artadd',(req,res)=>{
-    // res.sendFile( path.join(__dirname,'views/article-add.html') )
-    let data = {name:'西红柿炒蛋'}
-    res.render('article-add.html',data)
+router.get('/catindex', CateController.catindex)
+router.get('/catadd', CateController.catadd)
+router.get('/catedit', CateController.catedit)
+router.post('/postCat', CateController.postCat)
+router.get('/artadd', (req, res) => {
+    let data = {
+        name: '西红柿炒蛋'
+    }
+    res.render('article-add.html', data)
 })
-
-// 获取所有分类数据的接口
-router.get('/getCate',CateController.getCate)
-
-
-// 获取所有分类数据的接口
-router.get('/getOneCate',CateController.getOneCate)
-
-// 删除分类的接口
-router.post('/delCat',CateController.delCat)
-
-// 编辑分类的接口
-router.post('/updCate',CateController.updCate)
-
-// 获取文章数据接口
-router.get('/allarticle',ArtController.allArticle)
-
-
-// 删除文章
-router.post('/delArticle',ArtController.delArticle)
-
-// 匹配失败的路由
-router.all('*',(req,res)=>{
-    res.json({errcode:10004,message:"请求错误"})
+router.get('/getCate', CateController.getCate)
+router.get('/getOneCate', CateController.getOneCate)
+router.post('/delCat', CateController.delCat)
+router.post('/updCate', CateController.updCate)
+router.post('/delArticle', ArtController.delArticle)
+router.get('/addart', ArtController.artAdd)
+router.get('/artedit', ArtController.artEdit)
+router.post('/postArt', ArtController.postArt)
+router.post('/upload', upload.single('file'), ArtController.upload)
+router.get('/getOneArt', ArtController.getOneArt)
+router.post('/updArt', ArtController.updArt)
+router.get('/login', (req, res) => {
+    if (req.session.userInfo) {
+        res.redirect('/');
+        return
+    }
+    res.render('login.html')
 })
-
-// 暴露出去
+router.post('/signin', UserController.signin)
+router.get('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            throw err;
+        }
+    })
+    res.json({
+        message: '退出成功'
+    })
+})
+router.all('*', (req, res) => {
+    res.json({
+        errcode: 10004,
+        message: "请求错误"
+    })
+})
 module.exports = router;
-

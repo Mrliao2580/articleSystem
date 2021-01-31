@@ -1,6 +1,4 @@
-// 导入model,相当于模型执行sql语句，
 const model = require('../model/model.js');
-// 导入返回结果的信息
 const {
     delsucc,
     delfail,
@@ -14,7 +12,6 @@ const {
     updfail
 } = require('../util/responseMessage.js');
 
-// 分类控制器
 let CateController = {
     // 渲染后台分类列表页面
     catindex: (req, res) => {
@@ -51,8 +48,6 @@ let CateController = {
                 res.json(getfail)
             }
         }
-
-
     },
 
     // 实现分类的编辑入库
@@ -124,7 +119,6 @@ let CateController = {
         res.render('category-edit.html')
     },
 
-
     // 添加分类接口
     postCat: async (req, res) => {
         //1.接收参数
@@ -147,5 +141,4 @@ let CateController = {
     }
 }
 
-// 导出模块
 module.exports = CateController;

@@ -92,6 +92,7 @@
       })
     }
 
+
     function initCatData(){
       $.ajax({
         url: "/getCate",
@@ -101,9 +102,11 @@
         renderTable(res)
       })
     }
+    
     // 发送ajax请求 获取数据
     initCatData()
 
+   
     // ajax删除(需要委托绑定，因为元素是动态新增)
     $("tbody").on('click','.del',function(){
      
@@ -139,6 +142,7 @@
         })
       });
     })
+
     // 跳转到添加分类的页面中
     $("#add").on('click',function(){
        location.href = '/catadd';
